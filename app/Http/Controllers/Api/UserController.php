@@ -25,14 +25,14 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'confirm_password' => 'required|same:password',
         ]);
 
-        $data = $request->only(['name', 'email', 'password']);
+        $data = collect($validated)->except(['confirm_password'])->toArray();
         $data['password'] = Hash::make($data['password']);
         $user = User::query()->create($data);
         $user->refresh();
@@ -48,10 +48,16 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = User::query()->findOrFail($id);
+        $user = User::query()->find($id);
+
+        if (blank($user)) {
+            return response()->json([
+                'message' => 'Data tidak ditemukan!'
+            ], 404);
+        }
 
         return response()->json([
-            'message' => $user,
+            'message' => 'Berhasil mendapatkan data',
             'data' => $user
         ]);
     }
@@ -69,7 +75,7 @@ class UserController extends Controller
         ]);
 
         $user = User::query()->findOrFail($id);
-        $data = $request->only(['name', 'email', 'password']);
+        $data = collect($validated)->except(['confirm_password'])->toArray();
         $data['password'] = Hash::make($data['password']);
         $user->update($data);
         $user->refresh();
