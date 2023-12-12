@@ -7,7 +7,7 @@ on:
     branches: [ "development" ]
 
 jobs:
-  laravel-tests:
+  laravel-setup-and-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,7 +38,7 @@ jobs:
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
-        run: vendor/bin/phpunit
+        run: php artisan test
   laravel-build-js:
     runs-on: ubuntu-latest
     steps:
