@@ -56,9 +56,12 @@ jobs:
       - name: Build docker & running
         working-directory: src
         run: docker compose up -d app
+      - name: Directory Permissions
+        working-directory: src
+        run: chmod -R 777 storage bootstrap/cache && mkdir ./vendor && chmod -R 777 ./vendor
       - name: Install Dependencies
         working-directory: src
-        run: mkdir ./vendor && chmod -R 777 ./vendor && docker compose run --rm composer install && docker compose run --rm composer update
+        run: docker compose run --rm composer install && docker compose run --rm composer update
       - name: Copy .env
         working-directory: src
         run: cp .env.example .env
