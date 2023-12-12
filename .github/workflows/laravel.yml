@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v3
       - name: Install PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
-      - uses: actions/checkout@v3
       - name: Copy .env
         working-directory: src
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -42,6 +42,7 @@ jobs:
   laravel-build-js:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Install NPM dependencies
         working-directory: src
         run: npm install
