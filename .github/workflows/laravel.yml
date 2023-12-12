@@ -54,4 +54,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build docker & running
+        working-directory: src
         run: docker compose up -d app
