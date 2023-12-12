@@ -56,26 +56,29 @@ jobs:
       - name: Build docker & running
         working-directory: src
         run: docker compose up -d app
-      - name: Directory Permissions
+      - name: setup laravel
         working-directory: src
-        run: mkdir ./vendor && chmod -R 777 ./
-      - name: Install Dependencies
-        working-directory: src
-        run: docker compose run --rm composer install && docker compose run --rm composer update
-      - name: Copy .env
-        working-directory: src
-        run: cp .env.example .env
-      - name: Generate key
-        working-directory: src
-        run: docker compose run --rm artisan key:generate
-      - name: Migrate database
-        working-directory: src
-        run: docker compose run --rm artisan migrate:fresh --seed
-      - name: Clean all optimize
-        working-directory: src
-        run: docker compose run --rm artisan optimize:clear
-      - name: Run unit tests
-        working-directory: src
-        run: docker compose run --rm artisan test
-      - name: Make CURL request
-        run: curl 127.0.0.1:8066
+        run: docker compose run --rm composer install && cp .env.example .env && docker compose run --rm artisan key:generate && docker compose run --rm artisan migrate:fresh --seed && docker compose run --rm artisan optimize:clear && docker compose run --rm artisan test
+#      - name: Directory Permissions
+#        working-directory: src
+#        run: chmod -R 777 storage bootstrap/cache && mkdir ./vendor && chmod -R 777 ./vendor
+#      - name: Install Dependencies
+#        working-directory: src
+#        run: docker compose run --rm composer install && docker compose run --rm composer update
+#      - name: Copy .env
+#        working-directory: src
+#        run: cp .env.example .env
+#      - name: Generate key
+#        working-directory: src
+#        run: docker compose run --rm artisan key:generate
+#      - name: Migrate database
+#        working-directory: src
+#        run: docker compose run --rm artisan migrate:fresh --seed
+#      - name: Clean all optimize
+#        working-directory: src
+#        run: docker compose run --rm artisan optimize:clear
+#      - name: Run unit tests
+#        working-directory: src
+#        run: docker compose run --rm artisan test
+#      - name: Make CURL request
+#        run: curl 127.0.0.1:8066
