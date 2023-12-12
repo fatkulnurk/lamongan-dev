@@ -8,7 +8,6 @@ on:
 
 jobs:
   laravel-tests:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -40,3 +39,12 @@ jobs:
           DB_CONNECTION: sqlite
           DB_DATABASE: database/database.sqlite
         run: vendor/bin/phpunit
+  laravel-build-js:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install NPM dependencies
+        working-directory: src
+        run: npm install
+      - name: Compile assets
+        working-directory: src
+        run: npm run build
