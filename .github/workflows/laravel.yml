@@ -56,3 +56,5 @@ jobs:
       - name: Build docker & running
         working-directory: src
         run: docker compose up -d app
+      - name: Make CURL request
+        run: curl 127.0.0.1:8066
