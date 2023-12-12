@@ -58,7 +58,7 @@ jobs:
         run: docker compose up -d app
       - name: Install Dependencies
         working-directory: src
-        run: mkdir ./vendor && docker compose run --rm composer install && docker compose run --rm composer update
+        run: mkdir ./vendor && chmod -R 777 ./vendor && docker compose run --rm composer install && docker compose run --rm composer update
       - name: Copy .env
         working-directory: src
         run: cp .env.example .env
