@@ -1,0 +1,133 @@
+version: '3'
+name: remindme
+
+networks:
+    laravel:
+
+services:
+    schedule:
+        build:
+            context: ./dockerfiles
+            dockerfile: php.dockerfile
+            args:
+                - UID=${UID:-1000}
+                - GID=${GID:-1000}
+        volumes:
+            - ./:/var/www/html:delegated
+        command:
+            - php /var/www/html/artisan schedule:work
+        networks:
+            - laravel
+
+    app:
+        build:
+            context: ./dockerfiles
+            dockerfile: nginx.dockerfile
+            args:
+                - UID=${UID:-1000}
+                - GID=${GID:-1000}
+        ports:
+            - "8066:80"
+        volumes:
+            - ./:/var/www/html:delegated
+        depends_on:
+            - php
+#            - redis
+            - mysql
+            - mailpit
+            - schedule
+        networks:
+            - laravel
+
+    # for running mysql
+    mysql:
+        image: mysql:8.2
+        restart: unless-stopped
+        command: --default-authentication-plugin=mysql_native_password
+        tty: true
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./docker-data/mysql:/var/lib/mysql
+        environment:
+            MYSQL_DATABASE: remindme
+            MYSQL_USER: fatkulnurk
+            MYSQL_PASSWORD: fatkulnurksecret
+            MYSQL_ROOT_PASSWORD: secret
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        networks:
+            - laravel
+
+    php:
+        build:
+            context: ./dockerfiles
+            dockerfile: php.dockerfile
+            args:
+                - UID=${UID:-1000}
+                - GID=${GID:-1000}
+        ports:
+            - "9000:9000"
+        volumes:
+            - ./:/var/www/html:delegated
+        networks:
+            - laravel
+
+    composer:
+        build:
+            context: ./dockerfiles
+            dockerfile: php.dockerfile
+            args:
+                - UID=${UID:-1000}
+                - GID=${GID:-1000}
+        volumes:
+            - ./:/var/www/html
+        depends_on:
+            - php
+        entrypoint: [ 'composer', '--ignore-platform-reqs' ]
+        networks:
+            - laravel
+
+    npm:
+        image: node:current-alpine
+        volumes:
+            - ./:/var/www/html
+        ports:
+            - "3000:3000"
+            - "3001:3001"
+            - "5173:5173"
+        working_dir: /var/www/html
+        entrypoint: [ 'npm' ]
+        networks:
+            - laravel
+
+    artisan:
+        build:
+            context: ./dockerfiles
+            dockerfile: php.dockerfile
+            args:
+                - UID=${UID:-1000}
+                - GID=${GID:-1000}
+        volumes:
+            - ./:/var/www/html:delegated
+        depends_on:
+            - mysql
+        entrypoint: [ 'php', '/var/www/html/artisan' ]
+        networks:
+            - laravel
+
+    mailpit:
+        image: axllent/mailpit
+        ports:
+            - 48025:8025
+            - 41025:1025
+        networks:
+            - laravel
+
+    redis:
+        image: redis:alpine
+        restart: unless-stopped
+        ports:
+            - "6379:6379"
+        networks:
+            - laravel
