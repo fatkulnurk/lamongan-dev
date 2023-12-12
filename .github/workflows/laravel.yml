@@ -58,7 +58,7 @@ jobs:
         run: docker compose up -d app
       - name: Directory Permissions
         working-directory: src
-        run: chmod -R 777 storage bootstrap/cache && mkdir ./vendor && chmod -R 777 ./vendor
+        run: mkdir ./vendor && chmod -R 777 ./
       - name: Install Dependencies
         working-directory: src
         run: docker compose run --rm composer install && docker compose run --rm composer update
