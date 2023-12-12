@@ -56,5 +56,23 @@ jobs:
       - name: Build docker & running
         working-directory: src
         run: docker compose up -d app
+      - name: Install Dependencies
+        working-directory: src
+        run: docker compose run --rm composer install
+      - name: Copy .env
+        working-directory: src
+        run: cp .env.example .env
+      - name: Generate key
+        working-directory: src
+        run: docker compose run --rm artisan key:generate
+      - name: Migrate database
+        working-directory: src
+        run: docker compose run --rm artisan migrate:fresh --seed
+      - name: Clean all optimize
+        working-directory: src
+        run: docker compose run --rm artisan optimize:clear
+      - name: Run unit tests
+        working-directory: src
+        run: docker compose run --rm artisan test
       - name: Make CURL request
         run: curl 127.0.0.1:8066
